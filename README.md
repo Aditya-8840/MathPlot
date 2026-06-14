@@ -1,4 +1,4 @@
-# MathPlot (MarbleMathApp)
+# MathPlot
 
 MathPlot is an interactive, educational iOS game built with SwiftUI that makes learning mathematical functions fun and engaging. By manipulating equation parameters (like `m`, `c`, `h`, `k`) via intuitive sliders, players visually transform graphs to solve puzzles, collect stars, and complete levels across various function categories.
 
