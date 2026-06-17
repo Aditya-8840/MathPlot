@@ -6,6 +6,10 @@ import Observation
 @Observable
 class GameViewModel {
 
+    // MARK: - UserDefaults Keys
+    private static let completedLevelIdsKey = "completedLevelIds"
+    private static let completedQuizCategoriesKey = "completedQuizCategories"
+
     var currentLevel: Level
     var paramM: Double = 0 { didSet { checkStarProximity() } }
     var paramC: Double = 0 { didSet { checkStarProximity() } }
@@ -23,6 +27,17 @@ class GameViewModel {
     var completedLevelIds: Set<String> = []
     var selectedCategory: FunctionCategory? = nil
     var completedQuizCategories: Set<String> = []
+
+    // MARK: - Persistence Helpers
+    private func saveCompletedLevels() {
+        let array = Array(completedLevelIds)
+        UserDefaults.standard.set(array, forKey: Self.completedLevelIdsKey)
+    }
+
+    private func saveCompletedQuizCategories() {
+        let array = Array(completedQuizCategories)
+        UserDefaults.standard.set(array, forKey: Self.completedQuizCategoriesKey)
+    }
 
     let allLevels = LevelData.allLevels()
 
@@ -54,6 +69,14 @@ class GameViewModel {
         let startX = firstLevel.gridRange.lowerBound
         self.marbleX = startX
         self.marbleY = 0
+
+        // Restore saved progress from UserDefaults
+        if let savedLevelIds = UserDefaults.standard.array(forKey: Self.completedLevelIdsKey) as? [String] {
+            self.completedLevelIds = Set(savedLevelIds)
+        }
+        if let savedQuizCategories = UserDefaults.standard.array(forKey: Self.completedQuizCategoriesKey) as? [String] {
+            self.completedQuizCategories = Set(savedQuizCategories)
+        }
     }
 
     private func checkStarProximity() {
@@ -113,6 +136,7 @@ class GameViewModel {
 
     func markQuizCompleted(for category: FunctionCategory) {
         completedQuizCategories.insert(category.rawValue)
+        saveCompletedQuizCategories()
     }
 
     var isLastLevelInCategory: Bool {
@@ -467,6 +491,7 @@ extension GameViewModel {
             levelComplete = true
             showCelebration = true
             completedLevelIds.insert(currentLevel.id)
+            saveCompletedLevels()
         }
     }
 }
